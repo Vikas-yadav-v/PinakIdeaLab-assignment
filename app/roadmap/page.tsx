@@ -5,8 +5,8 @@ import Footer from "@/components/footer"
 import { useScrollReveal } from "@/hooks/use-scroll-reveal"
 import { Card, CardDescription, CardHeader, CardTitle } from "@/components/ui/card"
 import { Badge } from "@/components/ui/badge"
-import { CheckCircle2, Clock, AlertCircle } from "lucide-react"
 import { ROADMAP_ITEMS, STATUS_CONFIG } from "@/constants/roadmap"
+import { renderIcon } from "@/utils/icon-mapper"
 
 export default function RoadmapPage() {
   return (
@@ -29,15 +29,12 @@ export default function RoadmapPage() {
       <section className="py-8 border-b border-border">
         <div className="container mx-auto px-4">
           <div className="flex flex-wrap gap-4 justify-center">
-            {Object.entries(STATUS_CONFIG).map(([key, config]) => {
-              const Icon = config.icon
-              return (
-                <div key={key} className="flex items-center gap-2">
-                  <Icon className={`w-5 h-5 ${config.color}`} />
-                  <span className="text-sm font-medium">{config.label}</span>
-                </div>
-              )
-            })}
+            {Object.entries(STATUS_CONFIG)?.map(([key, config]) => (
+              <div key={key} className="flex items-center gap-2">
+                {renderIcon(config?.icon, { className: `w-5 h-5 ${config?.color}` })}
+                <span className="text-sm font-medium">{config?.label}</span>
+              </div>
+            ))}
           </div>
         </div>
       </section>
@@ -46,7 +43,7 @@ export default function RoadmapPage() {
       <section className="py-20">
         <div className="container mx-auto px-4">
           <div className="max-w-5xl mx-auto space-y-12">
-            {ROADMAP_ITEMS.map((quarter, index) => (
+            {ROADMAP_ITEMS?.map((quarter, index) => (
               <RoadmapQuarter key={quarter.quarter} quarter={quarter} index={index} />
             ))}
           </div>
@@ -81,7 +78,6 @@ export default function RoadmapPage() {
 function RoadmapQuarter({ quarter, index }: { quarter: (typeof ROADMAP_ITEMS)[0]; index: number }) {
   const { ref } = useScrollReveal()
   const statusConfig = STATUS_CONFIG[quarter.status as keyof typeof STATUS_CONFIG]
-  const Icon = statusConfig.icon
 
   return (
     <div ref={ref} className="relative" style={{ animationDelay: `${index * 100}ms` }}>
@@ -90,14 +86,16 @@ function RoadmapQuarter({ quarter, index }: { quarter: (typeof ROADMAP_ITEMS)[0]
           <div className="sticky top-24">
             <h3 className="text-2xl font-bold mb-2">{quarter.quarter}</h3>
             <Badge variant="outline" className={`${statusConfig.bgColor} ${statusConfig.color} border-0`}>
-              <Icon className="w-3 h-3 mr-1" />
-              {statusConfig.label}
+              <span className="inline-flex items-center gap-1">
+                {renderIcon(statusConfig.icon, { className: "w-3 h-3" })}
+                <span>{statusConfig.label}</span>
+              </span>
             </Badge>
           </div>
         </div>
 
         <div className="flex-1 space-y-4">
-          {quarter.items.map((item, itemIndex) => (
+          {quarter?.items?.map((item, itemIndex) => (
             <RoadmapItem key={item.title} item={item} index={itemIndex} />
           ))}
         </div>
@@ -108,7 +106,6 @@ function RoadmapQuarter({ quarter, index }: { quarter: (typeof ROADMAP_ITEMS)[0]
 
 function RoadmapItem({ item, index }: { item: { title: string; description: string; status: string }; index: number }) {
   const statusConfig = STATUS_CONFIG[item.status as keyof typeof STATUS_CONFIG]
-  const Icon = statusConfig.icon
 
   return (
     <Card
@@ -121,7 +118,7 @@ function RoadmapItem({ item, index }: { item: { title: string; description: stri
             <CardTitle className="text-lg mb-2">{item.title}</CardTitle>
             <CardDescription>{item.description}</CardDescription>
           </div>
-          <Icon className={`w-5 h-5 flex-shrink-0 ${statusConfig.color}`} />
+          {renderIcon(statusConfig.icon, { className: `w-5 h-5 flex-shrink-0 ${statusConfig.color}` })}
         </div>
       </CardHeader>
     </Card>
